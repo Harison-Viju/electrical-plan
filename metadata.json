@@ -1,0 +1,6 @@
+{
+  "name": "AutoCAD-Grade Electrical Layout CAD & ELS Studio",
+  "description": "Professional architectural and electrical layout CAD editor with multi-room complexes, interactive 8-way object resizing, smart nested-element selection, group transform, ELS 1 script bridge, and house-v1 reference symbols.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
