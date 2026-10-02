@@ -1,0 +1,9 @@
+{
+  "name": "Electrical Layout Maker",
+  "short_name": "Electrical Layout",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f2f5f9",
+  "theme_color": "#142033",
+  "description": "Offline phone-first electrical layout editor using house-v1 reference symbols."
+}
