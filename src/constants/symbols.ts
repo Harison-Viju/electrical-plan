@@ -10,13 +10,13 @@
 import { SymbolType } from '../types/layout';
 
 export const LABELS: Record<SymbolType, string> = {
-  led: 'LED Light',
-  fan: 'Ceiling Fan',
-  socket15: '15A Plug',
-  socket5: '5A Plug',
-  wallfan: 'Wall Fan',
-  exhaust: 'Exhaust Fan',
-  tubelight: 'Tube Light',
+  led: 'LED light',
+  fan: 'Ceiling fan',
+  socket15: '15A plug',
+  socket5: '5A plug',
+  wallfan: 'Wall fan',
+  exhaust: 'Exhaust fan',
+  tubelight: 'Tube light',
 };
 
 export const SYMBOL_SIZE: Record<SymbolType, [number, number]> = {

@@ -323,13 +323,18 @@ export const SvgObject: React.FC<SvgObjectProps> = ({ obj, isSelected, isPreview
 
   // Render Legend
   if (obj.type === 'legend') {
-    const symbolTypes: SymbolType[] = ['led', 'fan', 'wallfan', 'exhaust', 'tubelight', 'socket15', 'socket5'];
-    const rowH = 42;
-    const computedH = Math.max(obj.h, 44 + symbolTypes.length * rowH);
+    const symbolTypes: SymbolType[] = obj.legendSymbols?.length
+      ? obj.legendSymbols
+      : ['led', 'fan', 'wallfan', 'exhaust', 'tubelight', 'socket15', 'socket5'];
+    const headerH = Math.min(48, obj.h * 0.17);
+    const rowH = (obj.h - headerH - 8) / symbolTypes.length;
+    const symbolCenterX = obj.w * 0.2;
+    const labelX = obj.w * 0.43;
+    const labelFont = Math.max(8, Math.min(15, rowH * 0.38));
 
     return (
       <g
-        transform={`translate(${obj.x} ${obj.y}) scale(${obj.autoScale || 1}) rotate(${rot} ${cx} ${cy})`}
+        transform={`translate(${obj.x} ${obj.y}) rotate(${rot} ${cx} ${cy})`}
         data-id={obj.id}
         className="cursor-move"
       >
@@ -337,7 +342,7 @@ export const SvgObject: React.FC<SvgObjectProps> = ({ obj, isSelected, isPreview
           x={0}
           y={0}
           width={obj.w}
-          height={computedH}
+          height={obj.h}
           fill="#ffffff"
           stroke="#111827"
           strokeWidth={2}
@@ -346,33 +351,34 @@ export const SvgObject: React.FC<SvgObjectProps> = ({ obj, isSelected, isPreview
         />
         <text
           x={obj.w / 2}
-          y={22}
+          y={headerH * 0.68}
           textAnchor="middle"
           fill="#111827"
           fontFamily="Arial, sans-serif"
-          fontSize={12}
+          fontSize={Math.max(10, Math.min(18, headerH * 0.38))}
           fontWeight="900"
           letterSpacing="0.8px"
         >
-          REFERENCE SYMBOLS
+          {obj.legendTitle || 'REFERENCE SYMBOLS'}
         </text>
-        <line x1={8} y1={32} x2={obj.w - 8} y2={32} stroke="#111827" strokeWidth={1.5} />
+        <line x1={8} y1={headerH} x2={obj.w - 8} y2={headerH} stroke="#111827" strokeWidth={1.5} />
 
         {symbolTypes.map((sym, idx) => {
-          const rowY = 40 + idx * rowH;
+          const rowY = headerH + idx * rowH;
           const [defW, defH] = SYMBOL_SIZE[sym];
-          const scale = Math.min(28 / defW, 28 / defH);
+          const scale = Math.min((obj.w * 0.27) / defW, (rowH * 0.76) / defH);
+          const rowCenterY = rowY + rowH / 2;
           return (
-            <g key={sym} transform={`translate(16 ${rowY})`}>
-              <g transform={`translate(${16 - (defW * scale) / 2} ${16 - (defH * scale) / 2}) scale(${scale})`}>
+            <g key={sym}>
+              <g transform={`translate(${symbolCenterX - (defW * scale) / 2} ${rowCenterY - (defH * scale) / 2}) scale(${scale})`}>
                 <SymbolGraphic symbol={sym} w={defW} h={defH} />
               </g>
               <text
-                x={48}
-                y={20}
+                x={labelX}
+                y={rowCenterY + labelFont * 0.35}
                 fill="#111827"
                 fontFamily="Arial, sans-serif"
-                fontSize={12}
+                fontSize={labelFont}
                 fontWeight="600"
               >
                 {LABELS[sym]}

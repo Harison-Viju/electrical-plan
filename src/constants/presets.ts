@@ -28,59 +28,80 @@ box "AIR CURTAIN" at 31%,67% size 330x50 label=inside
 legend auto at right`;
 
 /**
- * Father's hand-drawn reference — the uploaded photograph.
- * Editable reconstruction of drawing1.jpeg. The room rectangles share walls,
- * while divider objects represent the shorter partition/stair lines.
+ * Editable reconstruction of Floor_Plan_Diagram_corrected_v2.png.
+ * Coordinates are normalized from the image to an A4 landscape page.
  */
 export const FATHERS_DRAWING_ELS = `ELS 1
 page A4 landscape border
-room "" at 55,55 size 1025x260 id=upper_hall
-room "" at 55,315 size 420x420 id=lower_wing
-room "" at 155,315 size 320x365 id=main_room
-divider h at 220 solid x=155 y=220 w=870 h=2 id=passage_wall
-divider h at 510 solid x=55 y=510 w=100 h=2 id=stair_1
-divider h at 530 solid x=55 y=530 w=100 h=2 id=stair_2
-divider h at 550 solid x=55 y=550 w=100 h=2 id=stair_3
-divider h at 570 solid x=55 y=570 w=100 h=2 id=stair_4
-divider h at 590 solid x=55 y=590 w=100 h=2 id=stair_5
-box "" at 990,55 size 90x70 id=entry_niche
-box "KWh\\nMeter" at 1000,225 size 68x78 id=kwh_meter
-exhaust at 280,55 id=exhaust_top_1
-exhaust at 540,55 id=exhaust_top_2
-exhaust at 840,55 id=exhaust_top_3
-wallfan at 425,55 id=wallfan_top_1
-wallfan at 775,55 id=wallfan_top_2
-fan at 435,125 id=ceiling_fan_1
-fan at 752,125 id=ceiling_fan_2
-led at 1035,75 id=entry_led
-socket5 at 180,237 rot=180 w=32 h=24 id=socket5_passage_1
-socket5 at 218,237 rot=180 w=32 h=24 id=socket5_passage_2
-socket5 at 256,237 rot=180 w=32 h=24 id=socket5_passage_3
-socket5 at 294,237 rot=180 w=32 h=24 id=socket5_passage_4
-socket5 at 332,237 rot=180 w=32 h=24 id=socket5_passage_5
-tubelight at 410,220 id=tube_passage
-wallfan at 650,220 id=wallfan_passage_center
-led x=615,643,671,699,727,755,783 y=220
-wallfan at 790,220 id=wallfan_passage_2
-exhaust at 320,315 id=exhaust_main_entry
-wallfan at 355,315 id=wallfan_main_entry
-tubelight at 235,405 id=tube_main_1
-tubelight at 385,405 id=tube_main_2
-tubelight at 235,500 id=tube_main_3
-tubelight at 385,515 id=tube_main_4
-tubelight at 250,620 id=tube_main_5
-tubelight at 385,650 id=tube_main_6
-socket15 at 155,365 rot=90 id=socket15_left
-socket5 at 155,465 rot=90 id=socket5_left_1
-socket5 at 155,510 rot=90 id=socket5_left_2
-socket5 at 155,620 rot=90 id=socket5_left_3
-socket15 at 475,535 rot=90 id=socket15_right_1
-socket5 at 475,565 rot=90 id=socket5_right_1
-socket5 at 475,595 rot=90 id=socket5_right_2
-led at 90,430 id=led_left_1
-led at 90,570 id=led_left_2
-led x=105,235,315,410 y=705
-legend auto at 790,385`;
+room "" at 40,50 size 1025x638 id=outer_boundary
+room "" at 111,289 size 292x309 id=main_room
+divider v at 933 solid x=933 y=50 w=2 h=239 id=annex_partition
+divider h at 289 solid x=111 y=289 w=954 h=2 id=upper_bottom_wall
+divider h at 204 solid x=126 y=204 w=686 h=2 id=corridor_wall
+divider v at 126 solid x=126 y=204 w=2 h=85 id=corridor_left_wall
+divider v at 403 solid x=403 y=289 w=2 h=399 id=lower_right_wall
+divider h at 126 solid x=933 y=126 w=50 h=2 id=annex_shelf
+divider h at 490 solid x=40 y=490 w=71 h=2 id=stair_1
+divider h at 506 solid x=40 y=506 w=71 h=2 id=stair_2
+divider h at 522 solid x=40 y=522 w=71 h=2 id=stair_3
+divider h at 538 solid x=40 y=538 w=71 h=2 id=stair_4
+divider h at 554 solid x=40 y=554 w=71 h=2 id=stair_5
+divider h at 568 solid x=40 y=568 w=71 h=2 id=stair_6
+box "" at 936,207 size 22x60 id=kwh_meter_box
+text "KWh meter" at 967,221 size 14 w=88 h=20 id=kwh_meter_label
+exhaust at 252,50 w=48 h=28 id=exhaust_top_1
+exhaust at 463,50 w=48 h=28 id=exhaust_top_2
+exhaust at 686,50 w=48 h=28 id=exhaust_top_3
+wallfan at 361,64 w=42 h=28 id=wallfan_top_1
+wallfan at 575,64 w=42 h=28 id=wallfan_top_2
+led at 995,73 w=16 h=16 id=annex_led
+tubelight at 120,128 rot=90 w=52 h=16 id=tube_upper_left
+wallfan at 299,190 rot=180 w=42 h=28 id=wallfan_corridor_1
+wallfan at 531,190 rot=180 w=42 h=28 id=wallfan_corridor_2
+wallfan at 786,190 rot=180 w=42 h=28 id=wallfan_corridor_3
+socket5 at 145,220 w=32 h=24 id=socket5_corridor_1
+socket5 at 180,220 w=32 h=24 id=socket5_corridor_2
+socket5 at 214,220 w=32 h=24 id=socket5_corridor_3
+socket5 at 247,220 w=32 h=24 id=socket5_corridor_4
+socket5 at 282,220 w=32 h=24 id=socket5_corridor_5
+socket5 at 316,220 w=32 h=24 id=socket5_corridor_6
+socket5 at 146,257 w=32 h=24 id=socket5_corridor_lower
+tubelight at 439,222 w=58 h=16 id=tube_corridor
+wallfan at 581,218 w=42 h=28 id=wallfan_corridor_lower
+led at 580,188 w=16 h=16 id=led_corridor_1
+led at 606,188 w=16 h=16 id=led_corridor_2
+led at 632,188 w=16 h=16 id=led_corridor_3
+led at 657,188 w=16 h=16 id=led_corridor_4
+led at 683,188 w=16 h=16 id=led_corridor_5
+led at 710,188 w=16 h=16 id=led_corridor_6
+led at 736,188 w=16 h=16 id=led_corridor_7
+socket5 at 911,220 rot=270 w=32 h=24 id=socket5_annex_1
+socket5 at 911,257 rot=270 w=32 h=24 id=socket5_annex_2
+exhaust at 244,289 w=48 h=28 id=exhaust_main_entry
+socket15 at 132,315 rot=90 w=42 h=30 id=socket15_left_1
+socket15 at 132,413 rot=90 w=42 h=30 id=socket15_left_2
+socket15 at 132,455 rot=90 w=42 h=30 id=socket15_left_3
+socket5 at 132,506 rot=90 w=34 h=24 id=socket5_left_1
+socket5 at 132,539 rot=90 w=34 h=24 id=socket5_left_2
+socket5 at 132,575 rot=90 w=34 h=24 id=socket5_left_3
+socket5 at 403,464 rot=270 w=34 h=24 id=socket5_right_1
+socket5 at 403,506 rot=270 w=34 h=24 id=socket5_right_2
+socket5 at 403,542 rot=270 w=34 h=24 id=socket5_right_3
+led at 93,349 w=16 h=16 id=led_outer_left_1
+led at 79,439 w=16 h=16 id=led_outer_left_2
+tubelight at 268,344 rot=0 w=58 h=16 id=tube_main_1
+tubelight at 366,302 rot=90 w=58 h=16 id=tube_main_2
+tubelight at 163,381 rot=90 w=58 h=16 id=tube_main_3
+tubelight at 252,421 rot=90 w=58 h=16 id=tube_main_4
+tubelight at 334,429 rot=90 w=58 h=16 id=tube_main_5
+tubelight at 169,490 rot=90 w=58 h=16 id=tube_main_6
+tubelight at 191,608 w=58 h=16 id=tube_main_7
+tubelight at 301,608 w=58 h=16 id=tube_main_8
+led at 90,662 w=16 h=16 id=led_bottom_1
+led at 188,662 w=16 h=16 id=led_bottom_2
+led at 270,662 w=16 h=16 id=led_bottom_3
+led at 352,662 w=16 h=16 id=led_bottom_4
+legend auto at 555,344 size 307x274 title="LEGEND" symbols=tubelight,socket5,socket15,exhaust,wallfan,led id=plan_legend`;
 
 export const COMPLEX_HALL_ELS = `ELS 1
 page A4 landscape border

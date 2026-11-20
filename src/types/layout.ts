@@ -80,7 +80,8 @@ export interface LayoutObject {
 
   // Legend specific
   auto?: boolean;
-  autoScale?: number;
+  legendTitle?: string;
+  legendSymbols?: SymbolType[];
 
   // Scaling specific
   aspectRatioLocked?: boolean;

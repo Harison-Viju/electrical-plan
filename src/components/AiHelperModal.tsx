@@ -52,6 +52,10 @@ CRITICAL SYNTAX RULES:
 8. Verify every object's complete width and height fit within the page. Do not let labels or symbols overlap room labels, walls, or each other.
 9. Carefully observe from the sketch whether partition lines are horizontal (h) or vertical (v).
 10. Preserve the exact relative layout, alignments, and counts of all visible symbols.
+11. For the corrected reference photo, reproduce the long upper hall and right annex, the open lower-right area, the lower-left outer frame with an inset room, and the passage/stair lines. Do not add room-name labels or ceiling fans that are not visible.
+12. Do not confuse the symbols: LED is a small circle; 5A is one closed semicircle with three rays; 15A is two nested closed semicircles with three rays; exhaust fan is two horizontal oval lobes with a center dot; wall fan is a wall-touching stem ending in a figure-eight; tube light is a short bar with end caps.
+13. When a legend is visible, preserve its title, exact symbol list, and order using this syntax: legend auto at X,Y size WxH title="LEGEND" symbols=tubelight,socket5,socket15,exhaust,wallfan,led.
+14. For this specific floor plan, the normalized outer boundary is approximately x=40,y=50,w=1025,h=638; the main inset room begins near x=111,y=289 and is about 292x309; the annex divider is near x=933; the upper passage divider is near y=204; the lower wall is near y=289. Preserve these relative locations and keep the large lower-right area open for the legend.
 
 Example:
 ELS 1
@@ -62,7 +66,7 @@ led at 210,180
 fan at 560,300
 socket15 at 1030,240 rot=90
 box "DB PANEL" at 880,600 size 150x52 label=inside
-legend auto at 870,390
+legend auto at 870,390 size 240x220 title="LEGEND" symbols=tubelight,socket5,socket15,exhaust,wallfan,led
 
 Now convert the attached electrical layout sketch photo into ELS 1.`;
     }

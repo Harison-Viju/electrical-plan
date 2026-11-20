@@ -822,7 +822,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
           <button
             onClick={() => onLoadPreset('fathers')}
             className="w-full text-left px-3 py-2 rounded border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold"
-          >Father&apos;s Site Drawing</button>
+          >Corrected Photo Plan</button>
           <button
             type="button"
             onClick={() => onLoadPreset('reference')}

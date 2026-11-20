@@ -193,7 +193,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => { onLoadPreset('fathers'); setPresetMenuOpen(false); }}
               className="w-full px-3 py-2 text-left text-xs hover:bg-slate-800 text-emerald-300 font-semibold border-b border-slate-800"
             >
-              📐 Father's Site Drawing ★
+              Corrected Photo Plan
             </button>
             <button
               type="button"

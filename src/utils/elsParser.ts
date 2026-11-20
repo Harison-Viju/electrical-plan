@@ -465,8 +465,8 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
           label: (m[1] || m[2] || '').replace(/\\n/g, '\n'),
           x: parsePosition(at[0], 'x', currentRoom),
           y: parsePosition(at[1], 'y', currentRoom),
-          w: 220,
-          h: sz + 10,
+          w: opts.w ? num(opts.w) : 220,
+          h: opts.h ? num(opts.h) : sz + 10,
           size: sz,
           rotation: Number(opts.rot || 0),
         },
@@ -482,26 +482,37 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
         errors.push(`Line ${i + 1}: legend syntax: legend auto at right | left | X,Y`);
         continue;
       }
-      const place = m[1].trim();
-      let lx = page.w - 200;
+      const sizeMatch = m[1].match(/\s+size\s+(\S+)(.*)$/i);
+      const positionPart = sizeMatch ? m[1].slice(0, sizeMatch.index).trim() : m[1].trim();
+      const opts = parseKeyValuePairs(sizeMatch?.[2] || '');
+      const sizeTokens = (sizeMatch?.[1] || '195x220').toLowerCase().split('x');
+      const legendW = parsePageDimension(sizeTokens[0], 'x', page);
+      const legendH = parsePageDimension(sizeTokens[1] || '220', 'y', page);
+      let lx = page.w - legendW - 20;
       let ly = 100;
-      if (place.toLowerCase() === 'left') {
+      if (positionPart.toLowerCase() === 'left') {
         lx = 20;
-      } else if (place.includes(',')) {
-        const at = place.split(',');
-        lx = num(at[0]);
-        ly = num(at[1]);
+      } else if (positionPart.includes(',')) {
+        const at = positionPart.split(',');
+        lx = parsePagePosition(at[0], 'x', page);
+        ly = parsePagePosition(at[1], 'y', page);
       }
+      const defaultLegendSymbols: LayoutObject['legendSymbols'] = ['led', 'fan', 'wallfan', 'exhaust', 'tubelight', 'socket15', 'socket5'];
+      const legendSymbols = opts.symbols
+        ? opts.symbols.split(',').filter((symbol): symbol is NonNullable<LayoutObject['symbol']> => defaultLegendSymbols.includes(symbol as NonNullable<LayoutObject['symbol']>))
+        : defaultLegendSymbols;
       addObj(
         {
-          id: `legend_${objects.filter(x => x.type === 'legend').length + 1}`,
+          id: opts.id || `legend_${objects.filter(x => x.type === 'legend').length + 1}`,
           type: 'legend',
           x: lx,
           y: ly,
-          w: 195,
-          h: 220,
+          w: legendW,
+          h: legendH,
           rotation: 0,
           auto: true,
+          legendTitle: opts.title || 'REFERENCE SYMBOLS',
+          legendSymbols,
         },
         i + 1
       );
@@ -627,10 +638,13 @@ export function exportToELS(doc: DocumentState): string {
     } else if (obj.type === 'text') {
       const safeLabel = (obj.label || '').replace(/\n/g, '\\n');
       lines.push(
-        `text "${safeLabel}" at ${round(obj.x)},${round(obj.y)} size ${round(obj.size || 20)} id=${obj.id}`
+        `text "${safeLabel}" at ${round(obj.x)},${round(obj.y)} size ${round(obj.size || 20)} w=${round(obj.w)} h=${round(obj.h)} id=${obj.id}`
       );
     } else if (obj.type === 'legend') {
-      lines.push(`legend auto at ${round(obj.x)},${round(obj.y)} id=${obj.id}`);
+      const symbols = obj.legendSymbols?.join(',') || 'led,fan,wallfan,exhaust,tubelight,socket15,socket5';
+      lines.push(
+        `legend auto at ${round(obj.x)},${round(obj.y)} size ${round(obj.w)}x${round(obj.h)} title="${obj.legendTitle || 'REFERENCE SYMBOLS'}" symbols=${symbols} id=${obj.id}`
+      );
     }
   }
 
@@ -646,7 +660,7 @@ export function fitObjectsToPage(objects: LayoutObject[], page: PageConfig, marg
       const height = obj.orientation === 'v' ? obj.h : 0;
       return { left: obj.x, top: obj.y, right: obj.x + width, bottom: obj.y + height };
     }
-    const height = obj.type === 'legend' ? Math.max(obj.h, 338) : obj.h;
+    const height = obj.h;
     const radians = ((obj.rotation || 0) * Math.PI) / 180;
     const width = Math.abs(obj.w * Math.cos(radians)) + Math.abs(height * Math.sin(radians));
     const rotatedHeight = Math.abs(obj.w * Math.sin(radians)) + Math.abs(height * Math.cos(radians));
@@ -674,9 +688,8 @@ export function fitObjectsToPage(objects: LayoutObject[], page: PageConfig, marg
       ...obj,
       x: obj.x * scale + offsetX,
       y: obj.y * scale + offsetY,
-      w: obj.type === 'legend' ? obj.w : obj.w * scale,
-      h: obj.type === 'legend' ? obj.h : obj.h * scale,
-      autoScale: obj.type === 'legend' ? (obj.autoScale || 1) * scale : obj.autoScale,
+      w: obj.w * scale,
+      h: obj.h * scale,
       size: obj.size ? obj.size * scale : obj.size,
       strokeWidth: obj.strokeWidth ? obj.strokeWidth * scale : obj.strokeWidth,
       points: obj.points?.map(point => ({ x: point.x * scale + offsetX, y: point.y * scale + offsetY })),

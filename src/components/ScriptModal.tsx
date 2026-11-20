@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { DocumentState, ELSParseResult, LayoutObject, PageConfig } from '../types/layout';
 import { parseELS, exportToELS, applyELS1Patches, fitObjectsToPage } from '../utils/elsParser';
-import { REFERENCE_ELS, COMPLEX_HALL_ELS } from '../constants/presets';
+import { REFERENCE_ELS, COMPLEX_HALL_ELS, FATHERS_DRAWING_ELS } from '../constants/presets';
 import { Copy, Check, AlertTriangle, AlertCircle, CheckCircle2, Play, Code2 } from 'lucide-react';
 
 interface ScriptModalProps {
@@ -186,6 +186,17 @@ export const ScriptModal: React.FC<ScriptModalProps> = ({
                     className="text-[11px] text-emerald-600 hover:underline font-semibold"
                   >
                     Sample Complex
+                  </button>
+                  <span className="text-slate-300">|</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScriptText(FATHERS_DRAWING_ELS);
+                      setParseResult(null);
+                    }}
+                    className="text-[11px] text-purple-700 hover:underline font-semibold"
+                  >
+                    Corrected Photo Plan
                   </button>
                 </div>
               </div>
