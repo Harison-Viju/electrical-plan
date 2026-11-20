@@ -323,7 +323,7 @@ export const SvgObject: React.FC<SvgObjectProps> = ({ obj, isSelected, isPreview
 
   // Render Legend
   if (obj.type === 'legend') {
-    const symbolTypes: SymbolType[] = ['socket15', 'socket5', 'led', 'fan'];
+    const symbolTypes: SymbolType[] = ['led', 'fan', 'wallfan', 'exhaust', 'tubelight', 'socket15', 'socket5'];
     const rowH = 42;
     const computedH = Math.max(obj.h, 44 + symbolTypes.length * rowH);
 
@@ -475,6 +475,58 @@ export const SymbolGraphic: React.FC<{ symbol: SymbolType; w: number; h: number 
         <line x1={32} y1={12} x2={32} y2={3} {...strokeProps} strokeWidth={2 / s} />
         <line x1={46.5} y1={17.2} x2={52.2} y2={9.5} {...strokeProps} strokeWidth={2 / s} />
         <line x1={17.5} y1={17.2} x2={11.8} y2={9.5} {...strokeProps} strokeWidth={2 / s} />
+      </g>
+    );
+  }
+
+  // Wall fan: a short wall stalk meeting a horizontal, two-lobed figure-eight.
+  // Keep the stem and the paired blades separate from the exhaust-fan center dot.
+  if (symbol === 'wallfan') {
+    const cx = w / 2;
+    const bladeY = h * 0.58;
+    const bladeRx = w * 0.21;
+    const bladeRy = h * 0.22;
+    return (
+      <g>
+        <line x1={cx} y1={0} x2={cx} y2={bladeY} {...strokeProps} />
+        <ellipse cx={cx - w * 0.17} cy={bladeY} rx={bladeRx} ry={bladeRy} {...strokeProps} />
+        <ellipse cx={cx + w * 0.17} cy={bladeY} rx={bladeRx} ry={bladeRy} {...strokeProps} />
+        <circle cx={cx} cy={bladeY} r={Math.min(w, h) * 0.045} fill="#111827" stroke="none" />
+      </g>
+    );
+  }
+
+  // Exhaust fan: horizontal figure-eight with the small center circle from the sketch.
+  if (symbol === 'exhaust') {
+    const cy = h / 2;
+    const cx = w / 2;
+    const lobeRx = w * 0.27;
+    const lobeRy = h * 0.32;
+    const dotR = Math.min(w, h) * 0.105;
+    return (
+      <g>
+        <ellipse cx={cx - w * 0.22} cy={cy} rx={lobeRx} ry={lobeRy} {...strokeProps} />
+        <ellipse cx={cx + w * 0.22} cy={cy} rx={lobeRx} ry={lobeRy} {...strokeProps} />
+        <circle cx={cx} cy={cy} r={dotR} fill="#111827" stroke="none" />
+      </g>
+    );
+  }
+
+  // ── Tube Light: horizontal bar with short vertical endcaps (  |──|  ) ──────
+  // Exactly matches the hand-drawn symbol in the reference image.
+  if (symbol === 'tubelight') {
+    const cy   = h / 2;
+    const capH = h * 0.55;   // height of the vertical endcaps
+    const barX1 = w * 0.15;
+    const barX2 = w * 0.85;
+    return (
+      <g>
+        {/* left endcap */}
+        <line x1={barX1} y1={cy - capH / 2} x2={barX1} y2={cy + capH / 2} {...strokeProps} strokeWidth={2.5} />
+        {/* horizontal bar */}
+        <line x1={barX1} y1={cy}            x2={barX2} y2={cy}             {...strokeProps} strokeWidth={2} />
+        {/* right endcap */}
+        <line x1={barX2} y1={cy - capH / 2} x2={barX2} y2={cy + capH / 2} {...strokeProps} strokeWidth={2.5} />
       </g>
     );
   }

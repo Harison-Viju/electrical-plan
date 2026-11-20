@@ -31,6 +31,9 @@ CRITICAL SYNTAX RULES:
 3. ALLOWED OBJECTS ONLY:
    - led x=15%,34%,65% y=9%,19% (or individual: led at X%,Y%)
    - fan at X%,Y%
+   - wallfan at X%,Y% (wall-mounted fan with a short wall stem and figure-eight head)
+   - exhaust at X%,Y% (figure-eight lobes with a center dot)
+   - tubelight at X,Y (horizontal tube with short end caps)
    - socket15 wall=right y=9%,18% (or: socket15 at X%,Y%)
    - socket5 wall=top x=48% (or: socket5 at X%,Y%)
    - room "Room Name" at X,Y size WxH

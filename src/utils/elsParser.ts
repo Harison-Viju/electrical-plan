@@ -194,6 +194,9 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
     const canonical = line
       .toLowerCase()
       .replace(/^ceiling\s+fan\b/, 'fan')
+      .replace(/^wall\s+fan\b/, 'wallfan')
+      .replace(/^exhaust\s+fan\b/, 'exhaust')
+      .replace(/^tube\s+light\b/, 'tubelight')
       .replace(/^light\b|^lamp\b|^bulb\b|^point\b/, 'led')
       .replace(/^15a\b|^power\s+socket\b|^socket\s+15\b/, 'socket15')
       .replace(/^5a\b|^socket\s+5\b/, 'socket5');
@@ -300,14 +303,16 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
       const pos = parsePosition(rawPos, orientation === 'h' ? 'y' : 'x', currentRoom);
       const isH = orientation === 'h';
 
+      const defaultX = isH ? (currentRoom?.x || 40) : pos;
+      const defaultY = isH ? pos : (currentRoom?.y || 80);
       const o: LayoutObject = {
         id: opts.id || `div_${objects.filter(x => x.type === 'divider').length + 1}`,
         type: 'divider',
         orientation,
-        x: isH ? (currentRoom?.x || 40) : pos,
-        y: isH ? pos : (currentRoom?.y || 80),
-        w: isH ? (currentRoom?.w || page.w - 80) : 2,
-        h: isH ? 2 : (currentRoom?.h || page.h - 160),
+        x: opts.x !== undefined ? parsePosition(opts.x, 'x', currentRoom) : defaultX,
+        y: opts.y !== undefined ? parsePosition(opts.y, 'y', currentRoom) : defaultY,
+        w: opts.w !== undefined ? num(opts.w) : (isH ? (currentRoom?.w || page.w - 80) : 2),
+        h: opts.h !== undefined ? num(opts.h) : (isH ? 2 : (currentRoom?.h || page.h - 160)),
         rotation: 0,
         dashed: isDashed,
       };
@@ -315,11 +320,13 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
       continue;
     }
 
-    // Reference symbols: led, fan, socket15, socket5
+    // Reference symbols: led, fan, socket15, socket5, wallfan, exhaust, tubelight
     const token = (canonical.match(/^\w+/) || [''])[0];
-    if (['led', 'fan', 'socket15', 'socket5'].includes(token)) {
-      const symType = token as 'led' | 'fan' | 'socket15' | 'socket5';
-      const rest = line.slice(line.toLowerCase().indexOf(token) + token.length);
+    if (['led', 'fan', 'socket15', 'socket5', 'wallfan', 'exhaust', 'tubelight'].includes(token)) {
+      const symType = token as 'led' | 'fan' | 'socket15' | 'socket5' | 'wallfan' | 'exhaust' | 'tubelight';
+      const trimmedLine = line.trim();
+      const symbolHead = trimmedLine.match(/^(?:ceiling\s+fan|wall\s+fan|exhaust\s+fan|tube\s+light|15\s*a\s+(?:socket|plug)|5\s*a\s+(?:socket|plug)|\w+)/i)?.[0] || token;
+      const rest = trimmedLine.slice(symbolHead.length);
       const opts = parseKeyValuePairs(rest);
       const wall = (opts.wall || '').toLowerCase() as 'left' | 'right' | 'top' | 'bottom';
       const [dw, dh] = SYMBOL_SIZE[symType];
@@ -576,7 +583,10 @@ export function exportToELS(doc: DocumentState): string {
       );
     } else if (obj.type === 'divider') {
       const pos = obj.orientation === 'v' ? round(obj.x) : round(obj.y);
-      lines.push(`divider ${obj.orientation || 'h'} at ${pos} dashed id=${obj.id}`);
+      const style = obj.dashed === false ? 'solid' : 'dashed';
+      lines.push(
+        `divider ${obj.orientation || 'h'} at ${pos} ${style} x=${round(obj.x)} y=${round(obj.y)} w=${round(obj.w)} h=${round(obj.h)} id=${obj.id}`
+      );
     } else if (obj.type === 'symbol') {
       const cx = round(obj.x + obj.w / 2);
       const cy = round(obj.y + obj.h / 2);

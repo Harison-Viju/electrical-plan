@@ -2,7 +2,7 @@
  * Types for AutoCAD-Grade Electrical Layout CAD & ELS Studio
  */
 
-export type SymbolType = 'led' | 'fan' | 'socket15' | 'socket5';
+export type SymbolType = 'led' | 'fan' | 'socket15' | 'socket5' | 'wallfan' | 'exhaust' | 'tubelight';
 
 export type ObjectType = 
   | 'symbol' 

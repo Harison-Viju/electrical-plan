@@ -110,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {(['led', 'fan', 'socket15', 'socket5'] as SymbolType[]).map(sym => {
+              {(['led', 'fan', 'wallfan', 'exhaust', 'tubelight', 'socket15', 'socket5'] as SymbolType[]).map(sym => {
                 const isActive = tool === `symbol:${sym}`;
                 const [w, h] = SYMBOL_SIZE[sym];
                 return (

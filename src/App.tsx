@@ -13,6 +13,7 @@ import {
 import {
   getInitialDocument,
   getComplexHallDocument,
+  getFathersDrawing,
 } from './constants/presets';
 import { DEFAULTS, LABELS, SYMBOL_SIZE } from './constants/symbols';
 import { Navbar } from './components/Navbar';
@@ -37,7 +38,7 @@ export default function App() {
         }
       }
     } catch {}
-    return getInitialDocument();
+    return getFathersDrawing();
   });
 
   // Selection & Tool State
@@ -47,6 +48,7 @@ export default function App() {
   // Canvas Viewport State
   const [zoom, setZoom] = useState<number>(0.9);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [fitRequest, setFitRequest] = useState(0);
   const [gridEnabled, setGridEnabled] = useState<boolean>(true);
   const [snapEnabled, setSnapEnabled] = useState<boolean>(true);
 
@@ -278,9 +280,11 @@ export default function App() {
   }, [doc.objects, recordHistory]);
 
   // Load Preset
-  const handleLoadPreset = (preset: 'reference' | 'complex' | 'blank') => {
+  const handleLoadPreset = (preset: 'reference' | 'complex' | 'blank' | 'fathers') => {
     recordHistory();
-    if (preset === 'reference') {
+    if (preset === 'fathers') {
+      setDoc(getFathersDrawing());
+    } else if (preset === 'reference') {
       const refDoc = getInitialDocument();
       setDoc(refDoc);
     } else if (preset === 'complex') {
@@ -307,6 +311,7 @@ export default function App() {
       });
     }
     setSelectedIds([]);
+    setFitRequest(value => value + 1);
   };
 
   // Keyboard Shortcuts
@@ -426,10 +431,7 @@ export default function App() {
         onToggleSnap={() => setSnapEnabled(prev => !prev)}
         zoom={zoom}
         onSetZoom={setZoom}
-        onResetZoom={() => {
-          setZoom(0.9);
-          setPanOffset({ x: 0, y: 0 });
-        }}
+        onResetZoom={() => setFitRequest(value => value + 1)}
         onTidyLayout={handleTidyLayout}
         onOpenScriptModal={() => setIsScriptModalOpen(true)}
         onOpenExportModal={() => setIsExportModalOpen(true)}
@@ -465,6 +467,7 @@ export default function App() {
           snapEnabled={snapEnabled}
           zoom={zoom}
           panOffset={panOffset}
+          fitRequest={fitRequest}
           onSelect={setSelectedIds}
           onUpdateObjects={handleUpdateObjects}
           onSetTool={setTool}

@@ -10,17 +10,23 @@
 import { SymbolType } from '../types/layout';
 
 export const LABELS: Record<SymbolType, string> = {
-  led: 'LED',
-  fan: 'Fan',
-  socket15: '15 A Socket',
-  socket5: '5 A Socket',
+  led: 'LED Light',
+  fan: 'Ceiling Fan',
+  socket15: '15A Plug',
+  socket5: '5A Plug',
+  wallfan: 'Wall Fan',
+  exhaust: 'Exhaust Fan',
+  tubelight: 'Tube Light',
 };
 
 export const SYMBOL_SIZE: Record<SymbolType, [number, number]> = {
-  led: [24, 24],
-  fan: [56, 56],
-  socket15: [64, 42],
-  socket5: [48, 34],
+  led:       [24, 24],
+  fan:       [56, 56],
+  socket15:  [64, 42],
+  socket5:   [48, 34],
+  wallfan:   [72, 44],
+  exhaust:   [70, 32],
+  tubelight: [80, 28],
 };
 
 export const DEFAULTS = {

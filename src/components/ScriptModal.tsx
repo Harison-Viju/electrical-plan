@@ -260,6 +260,15 @@ export const ScriptModal: React.FC<ScriptModalProps> = ({
                     <code className="text-purple-700">fan at 28%,40%</code>
                   </div>
                   <div>
+                    <code className="text-purple-700">wallfan at 40%,20%</code>
+                  </div>
+                  <div>
+                    <code className="text-purple-700">exhaust at 60%,20%</code>
+                  </div>
+                  <div>
+                    <code className="text-purple-700">tubelight at 300,240</code>
+                  </div>
+                  <div>
                     <code className="text-amber-700">socket15 wall=right y=9%,18%</code>
                   </div>
                   <div>

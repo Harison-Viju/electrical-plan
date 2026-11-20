@@ -45,7 +45,7 @@ interface PropertiesPanelProps {
   onDuplicateSelected: () => void;
   onDeselect: () => void;
   onUpdatePage: (updates: Partial<PageConfig>) => void;
-  onLoadPreset: (preset: 'reference' | 'complex' | 'blank') => void;
+  onLoadPreset: (preset: 'reference' | 'complex' | 'blank' | 'fathers') => void;
 }
 
 export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
@@ -366,7 +366,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             <div className="space-y-1.5">
               <span className="font-semibold text-slate-600 block">Switch Symbol</span>
               <div className="grid grid-cols-2 gap-1.5">
-                {(['led', 'fan', 'socket15', 'socket5'] as SymbolType[]).map(s => {
+                {(['led', 'fan', 'socket15', 'socket5', 'wallfan', 'exhaust', 'tubelight'] as SymbolType[]).map(s => {
                   const isActive = primary.symbol === s;
                   return (
                     <button
@@ -711,6 +711,9 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     fan: doc.objects.filter(o => o.type === 'symbol' && o.symbol === 'fan').length,
     socket15: doc.objects.filter(o => o.type === 'symbol' && o.symbol === 'socket15').length,
     socket5: doc.objects.filter(o => o.type === 'symbol' && o.symbol === 'socket5').length,
+    wallfan: doc.objects.filter(o => o.type === 'symbol' && o.symbol === 'wallfan').length,
+    exhaust: doc.objects.filter(o => o.type === 'symbol' && o.symbol === 'exhaust').length,
+    tubelight: doc.objects.filter(o => o.type === 'symbol' && o.symbol === 'tubelight').length,
     box: doc.objects.filter(o => o.type === 'box').length,
     room: doc.objects.filter(o => o.type === 'room').length,
     divider: doc.objects.filter(o => o.type === 'divider').length,
@@ -753,6 +756,18 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             <div className="p-2 border border-slate-200 rounded bg-slate-50 flex justify-between items-center">
               <span className="text-slate-600 font-sans text-[11px]">5 A Sockets</span>
               <span className="font-bold text-blue-600 text-sm">{counts.socket5}</span>
+            </div>
+            <div className="p-2 border border-slate-200 rounded bg-slate-50 flex justify-between items-center">
+              <span className="text-slate-600 font-sans text-[11px]">Wall Fans</span>
+              <span className="font-bold text-blue-600 text-sm">{counts.wallfan}</span>
+            </div>
+            <div className="p-2 border border-slate-200 rounded bg-slate-50 flex justify-between items-center">
+              <span className="text-slate-600 font-sans text-[11px]">Exhaust Fans</span>
+              <span className="font-bold text-blue-600 text-sm">{counts.exhaust}</span>
+            </div>
+            <div className="p-2 border border-slate-200 rounded bg-slate-50 flex justify-between items-center">
+              <span className="text-slate-600 font-sans text-[11px]">Tube Lights</span>
+              <span className="font-bold text-blue-600 text-sm">{counts.tubelight}</span>
             </div>
             <div className="p-2 border border-slate-200 rounded bg-slate-50 flex justify-between items-center">
               <span className="text-slate-600 font-sans text-[11px]">Boxes (TV/AC)</span>
@@ -804,6 +819,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
         {/* Preset Templates */}
         <div className="pt-2 border-t border-slate-100 space-y-2">
           <span className="font-semibold text-slate-700 block">Layout Presets</span>
+          <button
+            onClick={() => onLoadPreset('fathers')}
+            className="w-full text-left px-3 py-2 rounded border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold"
+          >Father&apos;s Site Drawing</button>
           <button
             type="button"
             onClick={() => onLoadPreset('reference')}

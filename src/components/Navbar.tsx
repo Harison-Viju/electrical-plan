@@ -2,7 +2,7 @@
  * Professional CAD Studio Top Navigation Bar
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Undo2,
   Redo2,
@@ -35,7 +35,7 @@ interface NavbarProps {
   onTidyLayout: () => void;
   onOpenScriptModal: () => void;
   onOpenExportModal: () => void;
-  onLoadPreset: (preset: 'reference' | 'complex' | 'blank') => void;
+  onLoadPreset: (preset: 'reference' | 'complex' | 'blank' | 'fathers') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -57,6 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenExportModal,
   onLoadPreset,
 }) => {
+  const [presetMenuOpen, setPresetMenuOpen] = useState(false);
   return (
     <header className="h-14 bg-slate-900 border-b border-slate-800 text-white px-4 flex items-center justify-between select-none">
       {/* Brand & Title */}
@@ -145,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           type="button"
           onClick={onResetZoom}
           className="px-2 py-0.5 font-mono text-[11px] text-slate-300 hover:text-white hover:bg-slate-800 rounded font-semibold"
-          title="Reset Zoom to 100%"
+          title="Fit page to canvas"
         >
           {Math.round(zoom * 100)}%
         </button>
@@ -171,6 +172,52 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           <span>Tidy Layout</span>
         </button>
+
+        <div className="w-px h-4 bg-slate-800 mx-1" />
+
+        {/* Preset Templates */}
+        <div className="relative group">
+          <button
+            type="button"
+            aria-expanded={presetMenuOpen}
+            onClick={() => setPresetMenuOpen(open => !open)}
+            className="px-2.5 py-1 rounded hover:bg-slate-800 text-slate-300 flex items-center gap-1.5 font-medium"
+            title="Load a preset drawing"
+          >
+            <LayoutTemplate className="w-3.5 h-3.5 text-purple-400" />
+            <span>Presets ▾</span>
+          </button>
+          <div className={`absolute top-full left-0 mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50 min-w-[200px] ${presetMenuOpen ? 'block' : 'hidden group-hover:block group-focus-within:block'}`}>
+            <button
+              type="button"
+              onClick={() => { onLoadPreset('fathers'); setPresetMenuOpen(false); }}
+              className="w-full px-3 py-2 text-left text-xs hover:bg-slate-800 text-emerald-300 font-semibold border-b border-slate-800"
+            >
+              📐 Father's Site Drawing ★
+            </button>
+            <button
+              type="button"
+              onClick={() => { onLoadPreset('reference'); setPresetMenuOpen(false); }}
+              className="w-full px-3 py-2 text-left text-xs hover:bg-slate-800 text-slate-300"
+            >
+              🏠 Reference Hall (Portrait)
+            </button>
+            <button
+              type="button"
+              onClick={() => { onLoadPreset('complex'); setPresetMenuOpen(false); }}
+              className="w-full px-3 py-2 text-left text-xs hover:bg-slate-800 text-slate-300"
+            >
+              🏢 Complex Hall (Landscape)
+            </button>
+            <button
+              type="button"
+              onClick={() => { onLoadPreset('blank'); setPresetMenuOpen(false); }}
+              className="w-full px-3 py-2 text-left text-xs hover:bg-slate-800 text-red-400"
+            >
+              🗑 New Blank Drawing
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Right Actions: Script Bridge & Export */}

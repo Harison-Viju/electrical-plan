@@ -30,6 +30,7 @@ interface CanvasProps {
   snapEnabled: boolean;
   zoom: number;
   panOffset: { x: number; y: number };
+  fitRequest: number;
   onSelect: (ids: string[]) => void;
   onUpdateObjects: (updater: (prev: LayoutObject[]) => LayoutObject[], recordHistory?: boolean) => void;
   onSetTool: (tool: ToolType) => void;
@@ -47,6 +48,7 @@ export const Canvas: React.FC<CanvasProps> = ({
   snapEnabled,
   zoom,
   panOffset,
+  fitRequest,
   onSelect,
   onUpdateObjects,
   onSetTool,
@@ -57,6 +59,22 @@ export const Canvas: React.FC<CanvasProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const fitToPage = () => {
+      const availableWidth = Math.max(1, container.clientWidth - 56);
+      const availableHeight = Math.max(1, container.clientHeight - 56);
+      const fittedZoom = Math.min(1, availableWidth / doc.page.w, availableHeight / doc.page.h);
+      onSetZoom(Number(Math.max(0.15, fittedZoom).toFixed(3)));
+      onSetPanOffset({ x: 0, y: 0 });
+    };
+    fitToPage();
+    const observer = new ResizeObserver(fitToPage);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [doc.page.w, doc.page.h, fitRequest, onSetZoom, onSetPanOffset]);
 
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [marquee, setMarquee] = useState<MarqueeBox | null>(null);

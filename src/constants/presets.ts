@@ -27,6 +27,62 @@ box "LED TV" at 52%,57% size 210x22 label=below
 box "AIR CURTAIN" at 31%,67% size 330x50 label=inside
 legend auto at right`;
 
+/**
+ * Father's hand-drawn reference — the uploaded photograph.
+ * Editable reconstruction of drawing1.jpeg. The room rectangles share walls,
+ * while divider objects represent the shorter partition/stair lines.
+ */
+export const FATHERS_DRAWING_ELS = `ELS 1
+page A4 landscape border
+room "Upper Hall" at 55,55 size 1025x260 id=upper_hall
+room "Lower Wing" at 55,315 size 420x420 id=lower_wing
+room "Main Room" at 155,315 size 320x365 id=main_room
+divider h at 220 solid x=155 y=220 w=870 h=2 id=passage_wall
+divider h at 510 solid x=55 y=510 w=100 h=2 id=stair_1
+divider h at 530 solid x=55 y=530 w=100 h=2 id=stair_2
+divider h at 550 solid x=55 y=550 w=100 h=2 id=stair_3
+divider h at 570 solid x=55 y=570 w=100 h=2 id=stair_4
+divider h at 590 solid x=55 y=590 w=100 h=2 id=stair_5
+box "" at 990,55 size 90x70 id=entry_niche
+box "KWh\\nMeter" at 1000,225 size 68x78 id=kwh_meter
+exhaust at 280,55 id=exhaust_top_1
+exhaust at 540,55 id=exhaust_top_2
+exhaust at 840,55 id=exhaust_top_3
+wallfan at 425,77 id=wallfan_top_1
+wallfan at 775,77 id=wallfan_top_2
+fan at 470,145 id=ceiling_fan_1
+fan at 815,145 id=ceiling_fan_2
+led at 1035,75 id=entry_led
+exhaust at 180,220 id=exhaust_passage_1
+exhaust at 215,220 id=exhaust_passage_2
+exhaust at 250,220 id=exhaust_passage_3
+exhaust at 285,220 id=exhaust_passage_4
+exhaust at 320,220 id=exhaust_passage_5
+tubelight at 410,220 id=tube_passage
+wallfan at 600,242 id=wallfan_passage_1
+fan at 760,265 id=ceiling_fan_3
+led x=650,680,710,740,770,800,830 y=220
+wallfan at 900,242 id=wallfan_passage_2
+exhaust at 320,315 id=exhaust_main_entry
+wallfan at 320,337 id=wallfan_main_entry
+tubelight at 235,405 id=tube_main_1
+tubelight at 385,405 id=tube_main_2
+tubelight at 235,500 id=tube_main_3
+tubelight at 385,515 id=tube_main_4
+tubelight at 250,620 id=tube_main_5
+tubelight at 385,650 id=tube_main_6
+socket15 at 155,365 rot=90 id=socket15_left
+socket5 at 155,465 rot=90 id=socket5_left_1
+socket5 at 155,510 rot=90 id=socket5_left_2
+socket5 at 155,620 rot=90 id=socket5_left_3
+socket15 at 475,535 rot=90 id=socket15_right_1
+socket5 at 475,565 rot=90 id=socket5_right_1
+socket5 at 475,595 rot=90 id=socket5_right_2
+led at 90,430 id=led_left_1
+led at 90,570 id=led_left_2
+led x=105,235,315,410 y=705
+legend auto at 790,385`;
+
 export const COMPLEX_HALL_ELS = `ELS 1
 page A4 landscape border
 room "Main Exhibition Hall" at 40,70 size 600x680
@@ -56,6 +112,18 @@ export function getInitialDocument(): DocumentState {
   };
 }
 
+export function getFathersDrawing(): DocumentState {
+  const page = { ...DEFAULTS.page, orientation: 'landscape' as const, w: 1130, h: 800 };
+  const parsed = parseELS(FATHERS_DRAWING_ELS, page);
+  return {
+    version: 1,
+    symbolSet: 'house-v1',
+    title: "Father's Site Drawing",
+    page: parsed.page,
+    objects: parsed.objects,
+  };
+}
+
 export function getComplexHallDocument(): DocumentState {
   const parsed = parseELS(COMPLEX_HALL_ELS, {
     ...DEFAULTS.page,
@@ -71,3 +139,4 @@ export function getComplexHallDocument(): DocumentState {
     objects: parsed.objects,
   };
 }
+
