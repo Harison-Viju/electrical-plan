@@ -329,7 +329,7 @@ export const SvgObject: React.FC<SvgObjectProps> = ({ obj, isSelected, isPreview
 
     return (
       <g
-        transform={`translate(${obj.x} ${obj.y}) rotate(${rot} ${cx} ${cy})`}
+        transform={`translate(${obj.x} ${obj.y}) scale(${obj.autoScale || 1}) rotate(${rot} ${cx} ${cy})`}
         data-id={obj.id}
         className="cursor-move"
       >

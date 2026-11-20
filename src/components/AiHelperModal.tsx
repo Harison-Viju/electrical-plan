@@ -23,41 +23,46 @@ export const AiHelperModal: React.FC<AiHelperModalProps> = ({ isOpen, onClose, d
 Reply with ONE code block containing ONLY the script. No explanations or text outside the code fence.
 
 CRITICAL SYNTAX RULES:
-1. NEVER output documentation grammar notation such as "h|v", "x|y", or "inside|below". The "|" symbol represents alternatives in specifications, NOT literal script text.
-2. Dividers MUST always explicitly declare orientation:
+1. Set the page orientation to match the sketch. This reference is wide, so use the directive "page A4 landscape border".
+2. The drawing canvas is 1130 units wide by 800 units high for A4 landscape. Normalize the drawing to that canvas with a 40-unit margin. Never copy raw photo pixel coordinates such as 1600,1200 into the script. Keep all geometry within the page; the app will proportionally fit the result as a safeguard.
+3. Room coordinates are top-left x,y; room dimensions are width x height. Symbols use their CENTER for at X,Y; boxes use their TOP-LEFT for at X,Y.
+4. Use numeric page coordinates for objects in multi-room plans. Percentage positions on symbols are relative to the most recently declared room and can place them in the wrong room.
+5. NEVER output documentation grammar notation such as "h|v", "x|y", or "inside|below". The "|" symbol represents alternatives in specifications, NOT literal script text.
+6. Dividers MUST always explicitly declare orientation. In multi-room plans use numeric page coordinates and explicit line geometry:
    - "divider h at Y% dashed" (horizontal partition across room)
    - "divider v at X% dashed" (vertical partition)
+   - "divider h at Y solid x=X y=Y w=W h=2" (page-positioned horizontal wall)
+   - "divider v at X solid x=X y=Y w=2 h=H" (page-positioned vertical wall)
    NEVER omit the "h" or "v" orientation.
-3. ALLOWED OBJECTS ONLY:
+7. ALLOWED OBJECTS ONLY:
    - led x=15%,34%,65% y=9%,19% (or individual: led at X%,Y%)
    - fan at X%,Y%
    - wallfan at X%,Y% (wall-mounted fan with a short wall stem and figure-eight head)
    - exhaust at X%,Y% (figure-eight lobes with a center dot)
    - tubelight at X,Y (horizontal tube with short end caps)
+   - Optional custom symbol size: socket5 at X,Y rot=180 w=32 h=24
    - socket15 wall=right y=9%,18% (or: socket15 at X%,Y%)
    - socket5 wall=top x=48% (or: socket5 at X%,Y%)
    - room "Room Name" at X,Y size WxH
    - divider h at Y% dashed
    - divider v at X% dashed
-   - box "Text label\\nLine 2" at X,Y size WxH label=inside (or: label=below)
+   - box "Text label\\nLine 2" at X,Y size WxH label=inside
    - text "Label" at X,Y size 20 align=center
    - legend auto at right
-4. Verify every coordinate is within the room boundary (percentages between 0% and 100%).
-5. Carefully observe from the sketch whether partition lines are horizontal (h) or vertical (v).
-6. Preserve the exact relative layout, alignments, and counts of all visible symbols.
+8. Verify every object's complete width and height fit within the page. Do not let labels or symbols overlap room labels, walls, or each other.
+9. Carefully observe from the sketch whether partition lines are horizontal (h) or vertical (v).
+10. Preserve the exact relative layout, alignments, and counts of all visible symbols.
 
 Example:
 ELS 1
-page A4 portrait border
-room "Hall" at 40,80 size 700x1050
-divider h at 54% dashed
-divider h at 67% dashed
-divider h at 85% dashed
-led x=15%,34%,65%,80% y=9%,19%,29%
-fan at 28%,40%
-socket15 wall=right y=9%,18%
-box "AIR CURTAIN" at 31%,67% size 330x50 label=inside
-legend auto at right
+page A4 landscape border
+room "Hall" at 50,70 size 1030x650
+divider h at 395 solid x=50 y=395 w=1030 h=2
+led at 210,180
+fan at 560,300
+socket15 at 1030,240 rot=90
+box "DB PANEL" at 880,600 size 150x52 label=inside
+legend auto at 870,390
 
 Now convert the attached electrical layout sketch photo into ELS 1.`;
     }

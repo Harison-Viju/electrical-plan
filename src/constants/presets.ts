@@ -34,9 +34,9 @@ legend auto at right`;
  */
 export const FATHERS_DRAWING_ELS = `ELS 1
 page A4 landscape border
-room "Upper Hall" at 55,55 size 1025x260 id=upper_hall
-room "Lower Wing" at 55,315 size 420x420 id=lower_wing
-room "Main Room" at 155,315 size 320x365 id=main_room
+room "" at 55,55 size 1025x260 id=upper_hall
+room "" at 55,315 size 420x420 id=lower_wing
+room "" at 155,315 size 320x365 id=main_room
 divider h at 220 solid x=155 y=220 w=870 h=2 id=passage_wall
 divider h at 510 solid x=55 y=510 w=100 h=2 id=stair_1
 divider h at 530 solid x=55 y=530 w=100 h=2 id=stair_2
@@ -48,23 +48,22 @@ box "KWh\\nMeter" at 1000,225 size 68x78 id=kwh_meter
 exhaust at 280,55 id=exhaust_top_1
 exhaust at 540,55 id=exhaust_top_2
 exhaust at 840,55 id=exhaust_top_3
-wallfan at 425,77 id=wallfan_top_1
-wallfan at 775,77 id=wallfan_top_2
-fan at 470,145 id=ceiling_fan_1
-fan at 815,145 id=ceiling_fan_2
+wallfan at 425,55 id=wallfan_top_1
+wallfan at 775,55 id=wallfan_top_2
+fan at 435,125 id=ceiling_fan_1
+fan at 752,125 id=ceiling_fan_2
 led at 1035,75 id=entry_led
-exhaust at 180,220 id=exhaust_passage_1
-exhaust at 215,220 id=exhaust_passage_2
-exhaust at 250,220 id=exhaust_passage_3
-exhaust at 285,220 id=exhaust_passage_4
-exhaust at 320,220 id=exhaust_passage_5
+socket5 at 180,237 rot=180 w=32 h=24 id=socket5_passage_1
+socket5 at 218,237 rot=180 w=32 h=24 id=socket5_passage_2
+socket5 at 256,237 rot=180 w=32 h=24 id=socket5_passage_3
+socket5 at 294,237 rot=180 w=32 h=24 id=socket5_passage_4
+socket5 at 332,237 rot=180 w=32 h=24 id=socket5_passage_5
 tubelight at 410,220 id=tube_passage
-wallfan at 600,242 id=wallfan_passage_1
-fan at 760,265 id=ceiling_fan_3
-led x=650,680,710,740,770,800,830 y=220
-wallfan at 900,242 id=wallfan_passage_2
+wallfan at 650,220 id=wallfan_passage_center
+led x=615,643,671,699,727,755,783 y=220
+wallfan at 790,220 id=wallfan_passage_2
 exhaust at 320,315 id=exhaust_main_entry
-wallfan at 320,337 id=wallfan_main_entry
+wallfan at 355,315 id=wallfan_main_entry
 tubelight at 235,405 id=tube_main_1
 tubelight at 385,405 id=tube_main_2
 tubelight at 235,500 id=tube_main_3

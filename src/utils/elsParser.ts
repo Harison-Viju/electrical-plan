@@ -54,6 +54,24 @@ function parsePosition(token: string | number, axis: 'x' | 'y', room?: LayoutObj
   return num(s);
 }
 
+function parsePagePosition(token: string | number, axis: 'x' | 'y', page: PageConfig): number {
+  const value = String(token).trim();
+  if (value.endsWith('%')) {
+    const dimension = axis === 'x' ? page.w : page.h;
+    return (num(value) / 100) * dimension;
+  }
+  return num(value);
+}
+
+function parsePageDimension(token: string, axis: 'x' | 'y', page: PageConfig): number {
+  const value = token.trim();
+  if (value.endsWith('%')) {
+    const dimension = axis === 'x' ? page.w : page.h;
+    return (num(value) / 100) * dimension;
+  }
+  return num(value);
+}
+
 function parseAt(text: string, room?: LayoutObject | null): { x: number; y: number } | null {
   const m = text.match(/(?:^|\s)at\s+([^\s]+),([^\s]+)/i);
   if (!m) return null;
@@ -138,15 +156,16 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
     usedIds.add(obj.id);
 
     // Geometric Validation: check if element is outside room boundary
-    if (obj.type !== 'room' && currentRoom && obj.wall == null) {
+      const parentRoom = obj.room ? objects.find(candidate => candidate.id === obj.room && candidate.type === 'room') : null;
+      if (obj.type !== 'room' && parentRoom && obj.wall != null) {
       if (
-        obj.x < currentRoom.x - 25 ||
-        obj.x > currentRoom.x + currentRoom.w + 25 ||
-        obj.y < currentRoom.y - 25 ||
-        obj.y > currentRoom.y + currentRoom.h + 25
+        obj.x < parentRoom.x - 25 ||
+        obj.x > parentRoom.x + parentRoom.w + 25 ||
+        obj.y < parentRoom.y - 25 ||
+        obj.y > parentRoom.y + parentRoom.h + 25
       ) {
         warnings.push(
-          `Line ${lineNum}: ${obj.symbol || obj.label || obj.type} at (${Math.round(obj.x)}, ${Math.round(obj.y)}) is outside room "${currentRoom.name}" boundary.`
+          `Line ${lineNum}: ${obj.symbol || obj.label || obj.type} is outside its attached room boundary.`
         );
       }
     }
@@ -223,7 +242,7 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
 
     // Room command
     if (/^room\b/i.test(canonical)) {
-      const m = line.match(/^room\s+(?:"([^"]+)"|'([^']+)'|(\S+))\s+at\s+([^\s]+)\s+size\s+(\S+)(.*)$/i);
+      const m = line.match(/^room\s+(?:"([^"]*)"|'([^']*)'|(\S+))\s+at\s+([^\s]+)\s+size\s+(\S+)(.*)$/i);
       if (!m) {
         errors.push(`Line ${i + 1}: room syntax: room "Name" at X,Y size WxH`);
         continue;
@@ -234,11 +253,11 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
       currentRoom = {
         id: opts.id || `room_${objects.filter(x => x.type === 'room').length + 1}`,
         type: 'room',
-        name: m[1] || m[2] || m[3],
-        x: num(at[0]),
-        y: num(at[1]),
-        w: num(sz[0]),
-        h: num(sz[1]),
+        name: m[1] ?? m[2] ?? m[3] ?? '',
+        x: parsePagePosition(at[0], 'x', page),
+        y: parsePagePosition(at[1], 'y', page),
+        w: parsePageDimension(sz[0], 'x', page),
+        h: parsePageDimension(sz[1], 'y', page),
         rotation: 0,
         strokeWidth: 4,
       };
@@ -329,7 +348,9 @@ export function parseELS(input: string, fallbackPage: PageConfig): ELSParseResul
       const rest = trimmedLine.slice(symbolHead.length);
       const opts = parseKeyValuePairs(rest);
       const wall = (opts.wall || '').toLowerCase() as 'left' | 'right' | 'top' | 'bottom';
-      const [dw, dh] = SYMBOL_SIZE[symType];
+      const [defaultW, defaultH] = SYMBOL_SIZE[symType];
+      const dw = opts.w ? num(opts.w) : defaultW;
+      const dh = opts.h ? num(opts.h) : defaultH;
 
       const base: LayoutObject = {
         id: '',
@@ -579,7 +600,7 @@ export function exportToELS(doc: DocumentState): string {
 
     if (obj.type === 'room') {
       lines.push(
-        `room "${obj.name || 'Room'}" at ${round(obj.x)},${round(obj.y)} size ${round(obj.w)}x${round(obj.h)} id=${obj.id}`
+        `room "${obj.name || ''}" at ${round(obj.x)},${round(obj.y)} size ${round(obj.w)}x${round(obj.h)} id=${obj.id}`
       );
     } else if (obj.type === 'divider') {
       const pos = obj.orientation === 'v' ? round(obj.x) : round(obj.y);
@@ -593,7 +614,9 @@ export function exportToELS(doc: DocumentState): string {
       const rot = round(obj.rotation || 0);
       const labelAttr = obj.label ? ` label="${obj.label}"` : '';
       const rotAttr = rot !== 0 ? ` rot=${rot}` : '';
-      lines.push(`${obj.symbol} at ${cx},${cy}${rotAttr}${labelAttr} id=${obj.id}`);
+      const [defaultW, defaultH] = SYMBOL_SIZE[obj.symbol || 'led'];
+      const sizeAttr = obj.w !== defaultW || obj.h !== defaultH ? ` w=${round(obj.w)} h=${round(obj.h)}` : '';
+      lines.push(`${obj.symbol} at ${cx},${cy}${rotAttr}${sizeAttr}${labelAttr} id=${obj.id}`);
     } else if (obj.type === 'box') {
       const safeLabel = (obj.label || '').replace(/\n/g, '\\n');
       const rot = round(obj.rotation || 0);
@@ -612,4 +635,52 @@ export function exportToELS(doc: DocumentState): string {
   }
 
   return lines.join('\n');
+}
+
+/** Fit an imported script's complete drawing proportionally inside its sheet. */
+export function fitObjectsToPage(objects: LayoutObject[], page: PageConfig, margin = 48): LayoutObject[] {
+  if (!objects.length) return objects;
+  const bounds = objects.map(obj => {
+    if (obj.type === 'divider') {
+      const width = obj.orientation === 'v' ? 0 : obj.w;
+      const height = obj.orientation === 'v' ? obj.h : 0;
+      return { left: obj.x, top: obj.y, right: obj.x + width, bottom: obj.y + height };
+    }
+    const height = obj.type === 'legend' ? Math.max(obj.h, 338) : obj.h;
+    const radians = ((obj.rotation || 0) * Math.PI) / 180;
+    const width = Math.abs(obj.w * Math.cos(radians)) + Math.abs(height * Math.sin(radians));
+    const rotatedHeight = Math.abs(obj.w * Math.sin(radians)) + Math.abs(height * Math.cos(radians));
+    const centerX = obj.x + obj.w / 2;
+    const centerY = obj.y + height / 2;
+    return {
+      left: centerX - width / 2,
+      top: centerY - rotatedHeight / 2,
+      right: centerX + width / 2,
+      bottom: centerY + rotatedHeight / 2,
+    };
+  });
+  const minX = Math.min(...bounds.map(box => box.left));
+  const minY = Math.min(...bounds.map(box => box.top));
+  const maxX = Math.max(...bounds.map(box => box.right));
+  const maxY = Math.max(...bounds.map(box => box.bottom));
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+  const scale = Math.min((page.w - margin * 2) / width, (page.h - margin * 2) / height);
+  const offsetX = (page.w - width * scale) / 2 - minX * scale;
+  const offsetY = (page.h - height * scale) / 2 - minY * scale;
+
+  return objects.map(obj => {
+    const fitted: LayoutObject = {
+      ...obj,
+      x: obj.x * scale + offsetX,
+      y: obj.y * scale + offsetY,
+      w: obj.type === 'legend' ? obj.w : obj.w * scale,
+      h: obj.type === 'legend' ? obj.h : obj.h * scale,
+      autoScale: obj.type === 'legend' ? (obj.autoScale || 1) * scale : obj.autoScale,
+      size: obj.size ? obj.size * scale : obj.size,
+      strokeWidth: obj.strokeWidth ? obj.strokeWidth * scale : obj.strokeWidth,
+      points: obj.points?.map(point => ({ x: point.x * scale + offsetX, y: point.y * scale + offsetY })),
+    };
+    return fitted;
+  });
 }

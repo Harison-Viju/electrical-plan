@@ -57,6 +57,7 @@ export default function App() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isAiHelperOpen, setIsAiHelperOpen] = useState(false);
   const [previewObjects, setPreviewObjects] = useState<LayoutObject[] | null>(null);
+  const [previewPage, setPreviewPage] = useState<PageConfig | null>(null);
 
   // Undo / Redo History
   const historyRef = useRef<DocumentState[]>([]);
@@ -460,7 +461,7 @@ export default function App() {
 
         {/* Central CAD Canvas */}
         <Canvas
-          doc={doc}
+          doc={previewPage ? { ...doc, page: previewPage } : doc}
           selectedIds={selectedIds}
           tool={tool}
           gridEnabled={gridEnabled}
@@ -522,15 +523,21 @@ export default function App() {
         isOpen={isScriptModalOpen}
         onClose={() => setIsScriptModalOpen(false)}
         doc={doc}
-        onApplyScript={(newObjs, mode) => {
+        onApplyScript={(newObjs, mode, page) => {
           recordHistory();
           setDoc(prev => ({
             ...prev,
+            page: mode === 'replace' ? page : prev.page,
             objects: mode === 'add' ? [...prev.objects, ...newObjs] : newObjs,
           }));
           setSelectedIds([]);
+          if (mode === 'replace') setFitRequest(value => value + 1);
         }}
-        onSetPreviewObjects={setPreviewObjects}
+        onSetPreviewObjects={(objects, page) => {
+          setPreviewObjects(objects);
+          setPreviewPage(objects ? page || null : null);
+          if (objects) setFitRequest(value => value + 1);
+        }}
       />
 
       <ExportModal

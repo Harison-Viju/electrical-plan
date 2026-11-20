@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { DocumentState, ELSParseResult, LayoutObject } from '../types/layout';
-import { parseELS, exportToELS, applyELS1Patches } from '../utils/elsParser';
+import { DocumentState, ELSParseResult, LayoutObject, PageConfig } from '../types/layout';
+import { parseELS, exportToELS, applyELS1Patches, fitObjectsToPage } from '../utils/elsParser';
 import { REFERENCE_ELS, COMPLEX_HALL_ELS } from '../constants/presets';
 import { Copy, Check, AlertTriangle, AlertCircle, CheckCircle2, Play, Code2 } from 'lucide-react';
 
@@ -13,8 +13,8 @@ interface ScriptModalProps {
   isOpen: boolean;
   onClose: () => void;
   doc: DocumentState;
-  onApplyScript: (newObjects: LayoutObject[], mode: 'replace' | 'add') => void;
-  onSetPreviewObjects: (objects: LayoutObject[] | null) => void;
+  onApplyScript: (newObjects: LayoutObject[], mode: 'replace' | 'add', page: DocumentState['page']) => void;
+  onSetPreviewObjects: (objects: LayoutObject[] | null, page?: PageConfig | null) => void;
 }
 
 export const ScriptModal: React.FC<ScriptModalProps> = ({
@@ -40,7 +40,7 @@ export const ScriptModal: React.FC<ScriptModalProps> = ({
 
   // Clean up preview on close
   const handleClose = () => {
-    onSetPreviewObjects(null);
+    onSetPreviewObjects(null, null);
     onClose();
   };
 
@@ -56,13 +56,15 @@ export const ScriptModal: React.FC<ScriptModalProps> = ({
           doc.objects,
           doc.objects.find(o => o.type === 'room')
         );
-        onSetPreviewObjects([...patched, ...result.objects]);
+        onSetPreviewObjects([...patched, ...result.objects], doc.page);
       } else {
-        const preview = importMode === 'add' ? [...doc.objects, ...result.objects] : result.objects;
-        onSetPreviewObjects(preview);
+        const importPage = importMode === 'add' ? doc.page : result.page;
+        const fitted = fitObjectsToPage(result.objects, importPage);
+        const preview = importMode === 'add' ? [...doc.objects, ...fitted] : fitted;
+        onSetPreviewObjects(preview, importPage);
       }
     } else {
-      onSetPreviewObjects(null);
+      onSetPreviewObjects(null, null);
     }
   };
 
@@ -77,12 +79,13 @@ export const ScriptModal: React.FC<ScriptModalProps> = ({
         doc.objects,
         doc.objects.find(o => o.type === 'room')
       );
-      onApplyScript([...patched, ...result.objects], 'replace');
+      onApplyScript([...patched, ...result.objects], 'replace', doc.page);
     } else {
-      onApplyScript(result.objects, importMode);
+      const importPage = importMode === 'add' ? doc.page : result.page;
+      onApplyScript(fitObjectsToPage(result.objects, importPage), importMode, importPage);
     }
 
-    onSetPreviewObjects(null);
+    onSetPreviewObjects(null, null);
     handleClose();
   };
 
